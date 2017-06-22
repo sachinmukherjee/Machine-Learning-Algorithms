@@ -26,8 +26,9 @@ def KNN(index, training_set, labels, k):
         result_set.append([result[n], labels[n]])
         n += 1
     result_set.sort(reverse=True)               # sor the result in descending order so that we can get less distance
+
     for i in (0, 1, 2):
-        key = min(result_set[i])
+        key = min(result_set[1])
         top.append(key)
         i += 1
     print top
