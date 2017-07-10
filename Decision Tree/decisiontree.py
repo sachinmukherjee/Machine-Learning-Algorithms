@@ -1,63 +1,57 @@
-# a program for implementing decision tree
+# a implementation of decision tree
+# a program for predicting outcome for the future input
 # created by sachin mukherjee
 # sachinmukherjee29@gmail.com
 
-from math import log
 
+def decisionTree(inp, training_set):
+    class_yes = 0                                                   # initialising the count for class yes and class no
+    class_no = 0
+    coloryes = 0                                                     # initialising the count for input and their respective class
+    colorno = 0
+    originyes = 0
+    originno = 0
+    typeyes = 0
+    typeno = 0
+    color = inp[0]
+    origin = inp[1]
+    typ = inp[2]
 
-def calShannonENTP(dataset):
-    numentries = len(dataset)
-    labelcount = {}
-    for featVect in dataset:
-        currentlabel = featVect[-1]
-        if currentlabel not in labelcount.keys():
-            labelcount[currentlabel] = 0
-            labelcount[currentlabel] += 1
+    for x in training_set:                                          # for iterating through the training set
+        if x[3] == 'Yes':                                           # for counting number of yes and no
+            class_yes += 1
         else:
-            labelcount[currentlabel] += 1
-    shannonEnt = 0.0
-    for key in labelcount:
-        prob = float(labelcount[key]) / numentries
-        shannonEnt += prob * log(prob, 2)
-        shannonEnt = - shannonEnt
-    return shannonEnt
+            class_no += 1
+
+        if x[0] == color and x[3] == 'Yes':
+            coloryes += 1
+        else:
+            colorno += 1
+ 
+        if x[1] == origin and x[3] == 'Yes':
+            originyes += 1
+        else:
+            originno += 1
+
+        if x[2] == typ and x[3] == 'No':
+            typeyes += 1
+        else:
+            typeno += 1
+    # probability of red domestic suv
+    # probability of red/yes * domestic/yes * suv/yes * probability of yes
+    inpyes = coloryes * originyes * typeyes * class_yes
+    inpno = colorno * originno * typeno * class_yes
+    if inpyes > inpno:
+        print "Input belong to class Yes"
+    else:
+        print "Input belong to class No"
 
 
-def splitData(dataset, axis, value):
-    relDataSet = []
-    for featVec in dataset:
-        if featVec[axis] == value:
-            reducedFeatVec = []
-            reducedFeatVec.extend(featVec[axis + 1:])
-            relDataSet.append(reducedFeatVec)
-    return relDataSet
+training_set = [['Red', 'Sports', 'Domestic', 'Yes'], ['Red', 'Sports', 'Domestic', 'No'],
+                ['Red', 'Sports', 'Domestic', 'Yes'], ['Yellow', 'Sports', 'Domestic', 'No'],
+                ['Yellow', 'Sports', 'Imported', 'Yes'], ['Yellow', 'SUV', 'Imported', 'No'],
+                ['Yellow', 'SUV', 'Imported', 'Yes'], ['Yellow', 'SUV', 'Domestic', 'No'],
+                ['Yellow', 'SUV', 'Imported', 'No'], ['Red', 'Sports', 'Imported', 'Yes']]
 
-
-def chooseBestFeature(dataset):
-    numFeature = len(dataset[0])-1
-    baseEntropy = calShannonENTP(dataset)
-    baseInfoGain = 0.0
-    baseFeature = -1
-    for i in range(numFeature):
-        featvec = [example[i] for example in dataset]
-        uniqueVals = set(featvec)
-        for value in uniqueVals:
-            subData = splitData(dataset, i, value)
-            prob = len(subData)/float(len(dataset))
-            newEntropy =+ prob * calShannonENTP(subData)
-        infoGain = baseEntropy-newEntropy
-        if(infoGain>baseEntropy):
-            baseEntropy=infoGain
-            bestFeature = I
-    return bestFeature
-
-
-
-
-
-
-
-
-dataset = [[1, 1, 'yes'], [1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']]
-print splitData(dataset, 1, 0)
-chooseBestFeature(dataset)
+inp = ['Red', 'Domestic', 'SUV']
+decisionTree(inp, training_set)
