@@ -1,58 +1,57 @@
-from numpy import *
+# a implementation of decision tree
+# a program for predicting outcome for the future input
+# created by sachin mukherjee
+# sachinmukherjee29@gmail.com
 
 
-def loadDataSet():
-    postingList = [['my', 'dog', 'has', 'flea', 'problem', 'help', 'please'],
-                   ['maybe', 'not', 'take', 'him', 'to', 'dog', 'park', 'stupid'],
-                   ['my', 'dalmation', 'is', 'so', 'cute', 'i', 'love', 'him'],
-                   ['stop', 'posting', 'stupid', 'worthless', 'garbage'],
-                   ['my', 'licks', 'ate', 'my', 'steak', 'how', 'to', 'stop', 'him'],
-                   ['quit', 'buying', 'worthless', 'dog', 'food', 'stupid']]
-    classVec = [0, 1, 0, 1, 0, 1]
-    return postingList, classVec
+def decisionTree(inp, training_set):
+    class_yes = 0  # initialising the count for class yes and class no
+    class_no = 0
+    coloryes = 0  # initialising the count for input and their respective class
+    colorno = 0
+    originyes = 0
+    originno = 0
+    typeyes = 0
+    typeno = 0
+    color = inp[0]
+    origin = inp[1]
+    typ = inp[2]
 
-
-def CreateVocabSet(dataset):
-    vocabset = set([])
-    for document in dataset:
-        vocabset |= set(document)
-    return list(vocabset)
-
-
-def setOfWords2Vec(vocablist, inputset):
-    returnVec = [0] * len(vocablist)
-    for words in inputset:
-        if words in vocablist:
-            returnVec[vocablist.index(words)] = 1
+    for x in training_set:  # for iterating through the training set
+        if x[3] == 'Yes':  # for counting number of yes and no
+            class_yes += 1
         else:
-            print "The word is not in my dictionary"
-    return returnVec
+            class_no += 1
 
-
-def trainNBO(trainMatrix, trainCategory):
-    numTrainDocs = len(trainMatrix)                     # No of set of 1 and 0 of of word present in dictionary or not
-    numWords = len(trainMatrix[0])                      # len of first set of 1 and 0 of words present in dictionary
-    pAbusive = sum(trainCategory) / float(numTrainDocs) # probablity of abusive= sum of training class divided by num of training example
-    p0Num = zeros(numWords); p1Num = zeros(numWords)
-    p0Denom = 0.0; p1Denom = 0.0
-    for i in range(numTrainDocs):                       # staring from 0 to 5
-        if trainCategory[i] == 1:
-            p1Num += trainMatrix[i]
-            p1Denom += sum(trainMatrix[i])
+        if x[0] == color and x[3] == 'Yes':
+            coloryes += 1
         else:
-            p0Num += trainMatrix[i]
-            p0Denom += sum(trainMatrix[i])
-        print "p1Num" + str(p1Num)
-        print p1Denom
-    p1Vect = p1Num / p1Denom
-    p0Vect = p0Num / p0Denom
-    return p0Vect, p1Vect, pAbusive
+            colorno += 1
+
+        if x[1] == origin and x[3] == 'Yes':
+            originyes += 1
+        else:
+            originno += 1
+
+        if x[2] == typ and x[3] == 'No':
+            typeyes += 1
+        else:
+            typeno += 1
+    # probability of red domestic suv
+    # probability of red/yes * domestic/yes * suv/yes * probability of yes
+    inpyes = coloryes * originyes * typeyes * class_yes
+    inpno = colorno * originno * typeno * class_yes
+    if inpyes > inpno:
+        print "Input belong to class Yes"
+    else:
+        print "Input belong to class No"
 
 
-listOfPost,listClasses = loadDataSet()      # This load the data from pre loaded values
-myVocabList = CreateVocabSet(listOfPost)    # Create a set of unique words from training examples
-trainMat =[]
-for postinDoc in listOfPost:
-    trainMat.append(setOfWords2Vec(myVocabList,postinDoc))
+training_set = [['Red', 'Sports', 'Domestic', 'Yes'], ['Red', 'Sports', 'Domestic', 'No'],
+                ['Red', 'Sports', 'Domestic', 'Yes'], ['Yellow', 'Sports', 'Domestic', 'No'],
+                ['Yellow', 'Sports', 'Imported', 'Yes'], ['Yellow', 'SUV', 'Imported', 'No'],
+                ['Yellow', 'SUV', 'Imported', 'Yes'], ['Yellow', 'SUV', 'Domestic', 'No'],
+                ['Yellow', 'SUV', 'Imported', 'No'], ['Red', 'Sports', 'Imported', 'Yes']]
 
-p0v,p1v,pAb = trainNBO(trainMat, listClasses)
+inp = ['Red', 'Domestic', 'SUV']
+decisionTree(inp, training_set)
